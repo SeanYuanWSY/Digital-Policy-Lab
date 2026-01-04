@@ -1,0 +1,35 @@
+{
+  "name": "digital-policy-lab",
+  "version": "2.0.0",
+  "description": "高级数字经济博弈模拟器 - 基于多主体博弈论的数字平台经济学研究工具",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve -s . -l 3000",
+    "dev": "npx serve -s . -l 3000 --cors",
+    "build": "echo 'This is a static project, no build needed'",
+    "preview": "npx serve -s . -l 4173"
+  },
+  "keywords": [
+    "digital-economy",
+    "game-theory",
+    "platform-economics",
+    "policy-simulation",
+    "data-visualization"
+  ],
+  "author": "Digital Policy Lab",
+  "license": "MIT",
+  "devDependencies": {
+    "serve": "^14.2.1"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/digital-policy-lab.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/digital-policy-lab/issues"
+  },
+  "homepage": "https://github.com/your-username/digital-policy-lab#readme"
+}

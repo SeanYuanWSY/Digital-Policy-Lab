@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Digital Policy Lab | 高级数字经济博弈模拟器</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body
+    class="bg-[#0A0E14] text-[#E6EDF3] min-h-screen overflow-x-hidden"
+  >
+    
+    <header
+      class="border-b border-[#00D4FF]/20 bg-[#161B22]/50 backdrop-blur-md px-4 sm:px-6 py-4 flex justify-between items-center z-50 sticky top-0"
+    >
+      <div class="flex items-center gap-3">
+        <i data-lucide="microscope" class="text-[#00D4FF]"></i>
+        <h1 class="text-xl font-bold tracking-tight">
+          DIGITAL POLICY <span class="text-[#00D4FF]">LAB</span>
+        </h1>
+        <span
+          class="text-xs bg-[#00D4FF]/10 text-[#00D4FF] px-2 py-0.5 rounded border border-[#00D4FF]/30"
+          >v2.0.0-Advanced</span
+        >
+      </div>
+      <div class="flex items-center gap-4">
+        <button
+          id="scenarioBtn"
+          class="flex items-center gap-2 text-xs bg-transparent border border-[#00E676]/40 hover:bg-[#00E676]/10 text-[#00E676] px-4 py-2 rounded transition-all"
+        >
+          <i data-lucide="layers" size="14"></i> 情景分析
+        </button>
+        <button
+          id="reportBtn"
+          class="flex items-center gap-2 text-xs bg-transparent border border-[#FF6B6B]/40 hover:bg-[#FF6B6B]/10 text-[#FF6B6B] px-4 py-2 rounded transition-all"
+        >
+          <i data-lucide="file-text" size="14"></i> 生成报告
+        </button>
+        <button
+          id="exportBtn"
+          class="flex items-center gap-2 text-xs bg-transparent border border-[#00D4FF]/40 hover:bg-[#00D4FF]/10 text-[#00D4FF] px-4 py-2 rounded transition-all"
+        >
+          <i data-lucide="download" size="14"></i> 导出数据
+        </button>
+      </div>
+    </header>
+
+    <main class="w-full">
+      <div
+        class="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col gap-6 lg:flex-row"
+      >
+        
+        <aside
+          class="w-full lg:w-[360px] border border-[#00D4FF]/10 bg-[#161B22]/30 rounded-2xl p-6 flex flex-col gap-4 lg:sticky lg:top-6 lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto shadow-[0_10px_35px_rgba(0,0,0,0.35)]"
+        >
+        
+        <div>
+          <h2
+            class="text-sm font-semibold text-[#00D4FF] mb-4 uppercase tracking-widest flex items-center gap-2"
+          >
+            <i data-lucide="settings" size="16"></i> 基础博弈变量
+          </h2>
+
+          <div class="space-y-4">
+            
+            <div class="space-y-2">
+              <div class="flex justify-between text-xs">
+                <span>佣金率 (r)</span>
+                <span id="val-r" class="font-mono text-[#00D4FF]">20%</span>
+              </div>
+              <input
+                type="range"
+                id="param-r"
+                min="0.05"
+                max="0.35"
+                step="0.01"
+                value="0.20"
+                class="w-full accent-[#00D4FF]"
+              />
+              <p class="text-[10px] text-gray-500 italic">
+                平台收入来源，影响供需双方激励
+              </p>
+            </div>
+
+            
+            <div class="space-y-2">
+              <div class="flex justify-between text-xs">
+                <span>劳动强度 (e)</span>
+                <span id="val-e" class="font-mono text-[#00D4FF]">2.5</span>
+              </div>
+              <input
+                type="range"
+                id="param-e"
+                min="1.0"
+                max="5.0"
+                step="0.1"
+                value="2.5"
+                class="w-full accent-[#00D4FF]"
+              />
+              <p class="text-[10px] text-gray-500 italic">
+                骑手工作强度，影响效率与外部性
+              </p>
+            </div>
+
+            
+            <div class="space-y-2">
+              <div class="flex justify-between text-xs">
+                <span>算法效率 (η)</span>
+                <span id="val-eta" class="font-mono text-[#00D4FF]">0.85</span>
+              </div>
+              <input
+                type="range"
+                id="param-eta"
+                min="0.5"
+                max="1.0"
+                step="0.01"
+                value="0.85"
+                class="w-full accent-[#00D4FF]"
+              />
+              <p class="text-[10px] text-gray-500 italic">
+                路径优化与匹配算法效率
+              </p>
+            </div>
+
+            
+            <div class="space-y-2">
+              <div class="flex justify-between text-xs">
+                <span>等待容忍度 (τ)</span>
+                <span id="val-tau" class="font-mono text-[#00D4FF]"
+                  >30 min</span
+                >
+              </div>
+              <input
+                type="range"
+                id="param-tau"
+                min="15"
+                max="45"
+                step="1"
+                value="30"
+                class="w-full accent-[#00D4FF]"
+              />
+              <p class="text-[10px] text-gray-500 italic">
+                消费者最大可接受等待时间
+              </p>
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="border-t border-white/5 pt-4">
+          <h2
+            class="text-sm font-semibold text-[#00E676] mb-4 uppercase tracking-widest flex items-center gap-2"
+          >
+            <i data-lucide="trending-up" size="16"></i> 市场环境参数
+          </h2>
+
+          <div class="space-y-4">
+            
+            <div class="space-y-2">
+              <div class="flex justify-between text-xs">
+                <span>市场竞争强度</span>
+                <span id="val-competition" class="font-mono text-[#00E676]"
+                  >0.3</span
+                >
+              </div>
+              <input
+                type="range"
+                id="param-competition"
+                min="0"
+                max="1"
+                step="0.01"
+                value="0.3"
+                class="w-full accent-[#00E676]"
+              />
+              <p class="text-[10px] text-gray-500 italic">
+                竞争对手数量与市场份额分布
+              </p>
+            </div>
+
+            
+            <div class="space-y-2">
+              <div class="flex justify-between text-xs">
+                <span>技术创新水平</span>
+                <span id="val-innovation" class="font-mono text-[#00E676]"
+                  >0.6</span
+                >
+              </div>
+              <input
+                type="range"
+                id="param-innovation"
+                min="0"
+                max="1"
+                step="0.01"
+                value="0.6"
+                class="w-full accent-[#00E676]"
+              />
+              <p class="text-[10px] text-gray-500 italic">
+                算法与物联等技术应用程度
+              </p>
+            </div>
+
+            
+            <div class="space-y-2">
+              <div class="flex justify-between text-xs">
+                <span>算法监控强度</span>
+                <span id="val-monitoring" class="font-mono text-[#00E676]"
+                  >0.5</span
+                >
+              </div>
+              <input
+                type="range"
+                id="param-monitoring"
+                min="0"
+                max="1"
+                step="0.01"
+                value="0.5"
+                class="w-full accent-[#00E676]"
+              />
+              <p class="text-[10px] text-gray-500 italic">
+                实时追踪与绩效考核强度
+              </p>
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="border-t border-white/5 pt-4">
+          <h2
+            class="text-sm font-semibold text-[#FF6B6B] mb-4 uppercase tracking-widest flex items-center gap-2"
+          >
+            <i data-lucide="shield" size="16"></i> 政策干预参数
+          </h2>
+
+          <div class="space-y-4">
+            
+            <div class="space-y-2">
+              <div class="flex justify-between text-xs">
+                <span>监管强度</span>
+                <span id="val-regulation" class="font-mono text-[#FF6B6B]"
+                  >0.2</span
+                >
+              </div>
+              <input
+                type="range"
+                id="param-regulation"
+                min="0"
+                max="1"
+                step="0.01"
+                value="0.2"
+                class="w-full accent-[#FF6B6B]"
+              />
+              <p class="text-[10px] text-gray-500 italic">
+                劳动保护、反垄断等政策力度
+              </p>
+            </div>
+
+            
+            <div class="space-y-2">
+              <div class="flex justify-between text-xs">
+                <span>社会平衡系数 (λ)</span>
+                <span id="val-lambda" class="font-mono text-[#FF6B6B]"
+                  >0.0</span
+                >
+              </div>
+              <input
+                type="range"
+                id="param-lambda"
+                min="0"
+                max="1"
+                step="0.01"
+                value="0"
+                class="w-full accent-[#FF6B6B]"
+              />
+              <p class="text-[10px] text-gray-500 italic">
+                社会福利vs平台利润权衡
+              </p>
+            </div>
+          </div>
+        </div>
+
+        
+        <div
+          class="mt-4 lg:mt-auto p-4 bg-gradient-to-br from-[#00D4FF]/5 to-[#00E676]/5 border border-[#00D4FF]/20 rounded-lg"
+        >
+          <h3
+            class="text-[11px] font-bold text-[#00D4FF] mb-2 flex items-center gap-1"
+          >
+            <i data-lucide="lightbulb" size="12"></i> 智能政策建议
+          </h3>
+          <div id="policy-recommendations" class="space-y-2">
+            <p class="text-[10px] text-gray-400 leading-relaxed">
+              调整参数以观察不同政策情景下的博弈均衡...
+            </p>
+          </div>
+        </div>
+        </aside>
+
+        
+        <section
+          class="flex-1 flex flex-col p-4 sm:p-6 gap-4 relative rounded-2xl border border-[#00D4FF]/10 bg-[#0F141C]/80 shadow-[0_10px_35px_rgba(0,0,0,0.35)] min-w-0"
+        >
+          
+          <div
+            class="absolute inset-0 opacity-10 pointer-events-none rounded-2xl"
+            style="
+              background-image: radial-gradient(#00d4ff 1px, transparent 1px);
+              background-size: 30px 30px;
+            "
+          ></div>
+
+          <div
+            class="z-10 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between text-[11px]"
+          >
+            <p id="simulation-status" class="text-gray-400">
+              当前展示为最新推演
+            </p>
+            <button
+              id="runSimulationBtn"
+              class="text-xs bg-[#00D4FF]/10 border border-[#00D4FF]/40 text-[#00D4FF] px-4 py-2 rounded transition-all hover:bg-[#00D4FF]/20 flex items-center gap-2"
+            >
+              <i data-lucide="play" size="14"></i> 开始推演
+            </button>
+          </div>
+
+          <div
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 z-10"
+          >
+            
+            <div class="metric-card">
+              <span class="label">平台利润 (P)</span>
+              <div class="value" id="metric-p">¥ 0</div>
+              <div class="trend" id="trend-p">+0.0%</div>
+          </div>
+          <div class="metric-card">
+            <span class="label">骑手效用 (Ur)</span>
+            <div class="value" id="metric-ur">0.00</div>
+            <div class="trend" id="trend-ur">+0.0%</div>
+          </div>
+            <div class="metric-card">
+              <span class="label">社会总福利 (SW)</span>
+              <div class="value" id="metric-sw">¥ 0</div>
+              <div class="trend" id="trend-sw">+0.0%</div>
+            </div>
+
+            
+            <div class="metric-card bg-[#00E676]/5 border-[#00E676]/20">
+              <span class="label text-[#00E676]">订单完成率指数</span>
+              <div class="value text-[#00E676]" id="metric-efficiency">0%</div>
+              <div class="trend" id="trend-efficiency">关注趋势</div>
+            </div>
+            <div class="metric-card bg-[#FF6B6B]/5 border-[#FF6B6B]/20">
+              <span class="label text-[#FF6B6B]">收益差距指数</span>
+              <div class="value text-[#FF6B6B]" id="metric-gini">0.00</div>
+              <div class="trend" id="trend-gini">越低越稳</div>
+            </div>
+          </div>
+          <p class="text-[11px] text-gray-500 z-10">
+            ※ 指数经过标准化处理，主要用于比较不同情景的走势，而非绝对数值。
+          </p>
+
+        
+        <div
+          class="flex-1 grid grid-cols-1 xl:grid-cols-12 gap-4 min-h-0"
+        >
+          
+          <div
+            class="col-span-1 xl:col-span-8 bg-[#161B22]/50 border border-[#00D4FF]/10 rounded-xl p-4 flex flex-col"
+          >
+            <div class="flex justify-between items-center mb-4">
+              <h3
+                class="text-xs font-bold uppercase tracking-wider text-[#00D4FF]"
+              >
+                博弈演化动态分析
+              </h3>
+              <div class="flex gap-4 text-[10px]">
+                <span class="flex items-center gap-1"
+                  ><span class="w-2 h-2 rounded-full bg-[#00D4FF]"></span>
+                  平台利润</span
+                >
+                <span class="flex items-center gap-1"
+                  ><span class="w-2 h-2 rounded-full bg-[#00E676]"></span>
+                  社会福利</span
+                >
+                <span class="flex items-center gap-1"
+                  ><span class="w-2 h-2 rounded-full bg-[#FF6B6B]"></span>
+                  骑手效用</span
+                >
+              </div>
+            </div>
+            <div class="relative h-[320px] md:h-[360px] lg:h-[400px]">
+              <canvas id="mainChart" class="w-full h-full"></canvas>
+            </div>
+          </div>
+
+          
+          <div class="col-span-1 xl:col-span-4 flex flex-col gap-4">
+            
+            <div
+              class="flex-1 bg-[#161B22]/50 border border-[#00D4FF]/10 rounded-xl p-4"
+            >
+              <h3
+                class="text-xs font-bold uppercase tracking-wider text-[#00D4FF] mb-4"
+              >
+                多维度均衡分析 · 研判
+              </h3>
+              <div class="h-[260px] md:h-[300px]">
+                <canvas id="radarChart" class="w-full h-full"></canvas>
+              </div>
+            </div>
+
+            
+            <div
+              class="h-24 bg-[#161B22]/50 border border-[#00E676]/10 rounded-xl p-4"
+            >
+              <h3
+                class="text-xs font-bold uppercase tracking-wider text-[#00E676] mb-2 flex items-center gap-2"
+              >
+                <i data-lucide="leaf" size="14"></i> 可持续发展指数
+              </h3>
+              <div class="w-full bg-black/40 h-3 rounded-full overflow-hidden">
+                <div
+                  id="sustainability-bar"
+                  class="h-full bg-gradient-to-r from-green-500 to-emerald-400 transition-all duration-500"
+                  style="width: 65%"
+                ></div>
+              </div>
+              <p
+                class="text-[10px] text-right mt-1 font-mono"
+                id="sustainability-val"
+              >
+                65%
+              </p>
+            </div>
+
+            
+            <div
+              class="h-24 bg-[#161B22]/50 border border-[#FF4D4D]/10 rounded-xl p-4"
+            >
+              <h3
+                class="text-xs font-bold uppercase tracking-wider text-[#FF4D4D] mb-2 flex items-center gap-2"
+              >
+                <i data-lucide="zap" size="14"></i> 算法压力系数
+              </h3>
+              <div class="w-full bg-black/40 h-3 rounded-full overflow-hidden">
+                <div
+                  id="stress-bar"
+                  class="h-full bg-gradient-to-r from-yellow-500 to-red-600 transition-all duration-500"
+                  style="width: 45%"
+                ></div>
+              </div>
+              <p class="text-[10px] text-right mt-1 font-mono" id="stress-val">
+                0.45
+              </p>
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-4 min-h-[8rem]">
+          
+          <div
+            class="bg-[#161B22]/80 border border-[#00D4FF]/10 rounded-xl p-4 h-48"
+            >
+              <h3
+                class="text-xs font-bold uppercase tracking-wider text-[#00D4FF] mb-2"
+              >
+                成本效益分析快照
+              </h3>
+            <div class="h-full">
+              <canvas id="costBenefitChart" class="w-full h-full"></canvas>
+            </div>
+          </div>
+
+          
+          <div
+            class="bg-[#161B22]/80 border border-[#00E676]/10 rounded-xl p-4 h-48"
+            >
+              <h3
+                class="text-xs font-bold uppercase tracking-wider text-[#00E676] mb-2"
+              >
+                市场结构指标（趋势版）
+              </h3>
+            <div class="space-y-2 text-[10px]">
+              <div class="flex justify-between">
+                <span>市场集中度:</span>
+                <span id="market-concentration" class="font-mono">65%</span>
+              </div>
+              <div class="flex justify-between">
+                <span>创新指数:</span>
+                <span id="innovation-index" class="font-mono">0.60</span>
+              </div>
+              <div class="flex justify-between">
+                <span>监管有效性:</span>
+                <span id="regulatory-effectiveness" class="font-mono">20%</span>
+              </div>
+            </div>
+          </div>
+
+          
+          <div
+            class="bg-[#161B22]/80 border border-[#FF6B6B]/10 rounded-xl p-4 overflow-hidden relative h-48"
+            >
+              <h3
+                class="text-xs font-bold uppercase tracking-wider text-[#FF6B6B] mb-2"
+              >
+                实时订单流仿真 · 监测
+              </h3>
+            <div id="order-grid" class="grid grid-cols-16 gap-1 h-full">
+              
+            </div>
+          </div>
+        </div>
+        </section>
+      </div>
+    </main>
+
+    
+    <footer
+      class="bg-[#161B22] border-t border-[#00D4FF]/20 px-4 sm:px-6 py-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between text-[10px] font-mono text-gray-400"
+    >
+      <div class="flex flex-wrap gap-x-6 gap-y-1 text-[#00E676]">
+        <span>收益差距指数: <span id="footer-gini">0.00</span></span>
+        <span class="text-[#FF6B6B]"
+          >算法效率感知: <span id="footer-efficiency">0.85</span></span
+        >
+      </div>
+      <div class="flex flex-wrap gap-x-4 gap-y-1 text-right sm:text-left">
+        <span class="text-[#00E676]"
+          >Pareto Status: <span id="pareto-label">Scanning...</span></span
+        >
+      </div>
+    </footer>
+
+    
+    <div
+      id="scenarioModal"
+      class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-50 flex items-center justify-center"
+    >
+      <div
+        class="bg-[#161B22] border border-[#00D4FF]/20 rounded-xl p-6 w-96 max-h-[80vh] overflow-y-auto"
+      >
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-lg font-bold text-[#00D4FF]">情景分析</h3>
+          <button id="closeScenario" class="text-gray-400 hover:text-white">
+            <i data-lucide="x" size="20"></i>
+          </button>
+        </div>
+        <div class="space-y-4">
+          <button
+            class="scenario-btn w-full text-left p-3 bg-[#00D4FF]/10 border border-[#00D4FF]/20 rounded hover:bg-[#00D4FF]/20 transition-all"
+            data-scenario="baseline"
+          >
+            <div class="font-semibold text-[#00D4FF]">基准情景</div>
+            <div class="text-xs text-gray-400">
+              佣金、监管均保持中性水平的一般状态
+            </div>
+          </button>
+          <button
+            class="scenario-btn w-full text-left p-3 bg-[#00E676]/10 border border-[#00E676]/20 rounded hover:bg-[#00E676]/20 transition-all"
+            data-scenario="regulation"
+          >
+            <div class="font-semibold text-[#00E676]">强监管情景</div>
+            <div class="text-xs text-gray-400">
+              监管力度上升、劳动强度下降的配置
+            </div>
+          </button>
+          <button
+            class="scenario-btn w-full text-left p-3 bg-[#FF6B6B]/10 border border-[#FF6B6B]/20 rounded hover:bg-[#FF6B6B]/20 transition-all"
+            data-scenario="competition"
+          >
+            <div class="font-semibold text-[#FF6B6B]">激烈竞争情景</div>
+            <div class="text-xs text-gray-400">
+              竞争激烈、佣金下调、监控趋紧的组合
+            </div>
+          </button>
+          <button
+            class="scenario-btn w-full text-left p-3 bg-[#FFD700]/10 border border-[#FFD700]/20 rounded hover:bg-[#FFD700]/20 transition-all"
+            data-scenario="innovation"
+          >
+            <div class="font-semibold text-[#FFD700]">技术突破情景</div>
+            <div class="text-xs text-gray-400">
+              算法效率与创新水平显著提升的组合
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
