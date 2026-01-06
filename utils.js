@@ -1,4 +1,3 @@
-
 export const formatCurrency = (val) => {
   return new Intl.NumberFormat("zh-CN", {
     style: "currency",
@@ -170,24 +169,7 @@ ${this.generateStatisticalSummary(analysis)}
 
 ---
 
-## 公众号传播要点
-
-### 标题建议
-1. "数字经济新观察：平台算法如何重塑劳动关系？"
-2. "外卖骑手的数字困境：算法压力与政策平衡"
-3. "平台经济的双刃剑：效率提升vs社会公平"
-
-### 核心观点
-${this.generatePublicInsights(analysis, currentParams)}
-
-### 可视化亮点
-- 博弈演化动态图：展示利润、福利、效用的动态平衡
-- 多维雷达图：直观呈现平台经济的六个关键维度
-- 政策情景对比：不同监管强度下的均衡结果
-
----
-
-*本报告基于数字经济博弈理论模型生成，仅供学术研究和政策参考使用。*
+*本报告基于数字经济博弈理论模型生成，仅供参考。*
 `;
   }
 
